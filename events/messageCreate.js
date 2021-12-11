@@ -2,15 +2,17 @@ const client = require("..");
 var config = require("../settings/config.json");
 var ee = require("../settings/embed.json");
 const { MessageEmbed } = require("discord.js");
-const db = require('quick.db');
-const prefixodb = db.get('prefixodb')
+const { collectionConfig } = require("../start/mongologin");
 
 client.on('messageCreate', async message => {
+    const configdb = await collectionConfig.find({}).toArray();
+    const prefixodb = configdb[0].extraprefix;
     const prefixes = ['+', `${prefixodb}`];
     if (!message.guild) return;
     if (message.author.bot) return;
     if (message.channel.partial) await message.channel.fetch();
     if (message.partial) await message.fetch();
+    var prefix = "+" || prefixodb;
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const cmd = args.shift().toLowerCase();
     //if(!message.content.startsWith(prefix)) return;

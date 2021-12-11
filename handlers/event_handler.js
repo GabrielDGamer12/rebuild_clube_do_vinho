@@ -8,12 +8,12 @@ const fs = require('fs');
 
 module.exports = (client) => {
     try {
-        fs.readdirSync("./eventos/").forEach((file) => {
-            const events = fs.readdirSync("./eventos/").filter((file) =>
+        fs.readdirSync("./events/").forEach((file) => {
+            const events = fs.readdirSync("./events/").filter((file) =>
               file.endsWith(".js")
             );
             for (let file of events) {
-              let pull = require(`../eventos/${file}`);
+              let pull = require(`../events/${file}`);
               if (pull.name) {
                 client.events.set(pull.name, pull);
               }

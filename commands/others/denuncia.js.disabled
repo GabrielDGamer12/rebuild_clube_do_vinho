@@ -1,0 +1,41 @@
+const Discord = require("discord.js");
+const { Message, Client, MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
+
+module.exports = {
+    name: "denuncia",
+    category: "others",
+    run: async (client, message, args) => {
+const content = args.slice(1).join(" ");
+const userid = args.slice(0);
+
+if (!args[0]) {
+  message.delete();
+  return message.channel.send(`${message.author}, escreva sua denúncia após o comando`)
+} else if (content.length < 1) {
+  message.delete();
+  return message.channel.send(`${message.author}, não é possivel enviar uma denúncia vazia.`);
+} else if (content.length > 1000) {
+  message.delete();
+  return message.channel.send(`${message.author}, forneça uma denúncia de no máximo 1000 caracteres.`);
+} else {
+  var canal = message.guild.channels.cache.find(ch => ch.id === "919143088662921227");
+  const msg = await canal.send({embeds: [
+    new MessageEmbed()
+    .setTitle("Denúncia")
+    .setColor("#FFFFF1")
+    .addField("Autor da Denúncia:", message.author.username)
+    .addField("Membro Denunciado", userid)
+    .addField("Denúncia", content)
+    .setFooter("ID do Autor: " + message.author.id)
+    .setTimestamp()
+  ]});
+  message.delete();
+  await message.channel.send(`${message.author} sua denúncia foi enviada com sucesso!`);
+
+  const emojis = ["✅", "❌"];
+
+  for (const i in emojis) {
+    await msg.react(emojis[i])
+  }
+}
+}}

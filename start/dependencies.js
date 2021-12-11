@@ -5,6 +5,7 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 require("./mongologin");
+const config = require("../settings/config.json");
 //require("./ping");
 
 module.exports = { Client, Discord, Message, MessageEmbed, Collection, WebhookClient, fs, express, app };

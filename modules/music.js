@@ -1,3 +1,7 @@
+const { Client, Message, MessageEmbed, Collection, WebhookClient, fs } = require("../start/dependencies");
+
+const { collectionMusic } = require("../start/mongologin")
+
 const Distube = require('distube').default;
 const SpotifyPlugin = require("@distube/spotify").default;
 const { SoundCloudPlugin } = require("@distube/soundcloud");
@@ -36,7 +40,7 @@ const status = (queue) =>
       : 'Off'
   } | Autoplay: ${queue.autoplay ? 'On' : 'Off'}`;
 
-distube
+  distube
   .on('playSong', async(queue, song) => { 
     const filteredDocsStart = (await collectionMusic.find({}, { projection: { _id: 0, volume: 1 } }).toArray());
     distube.setVolume(queue, Number(filteredDocsStart[0].volume));
@@ -66,7 +70,7 @@ distube
     queue.textChannel.send({ embeds: [playEmbed] });
   })
   .on('addList', async(queue, playlist) => {
-    let embed = new MessageEmbed()
+    let embed = new Embed()
     .setDescription(`A playlist \`${playlist.name}\` foi adicionada (${playlist.songs.length} músicas) para a fila\n${status(queue)}`)
     queue.textChannel.send({embeds: [embed]})
   })
@@ -132,14 +136,15 @@ get_line('./listplay.txt', query.toString() - 1, function(err, line){
 // *************************************************************************************
 
 client.on('messageCreate', async (message, song) => {
+  const configdb = await collectionMusic.find({}).toArray();
   if (
     !message.guild ||
     message.author.bot ||
-    !message.content.startsWith(config.prefix)
+    !message.content.startsWith(config.prefix || configdb[0].extraprefix)
   )
     return;
 
-  let args = message.content.slice(config.prefix.length).trim().split(' ');
+  let args = message.content.slice(config.prefix.length || configdb[0].extraprefix.length).trim().split(' ');
   let cmd = args.shift()?.toLowerCase();
 
   if (cmd === 'ping') {
@@ -254,16 +259,22 @@ client.on('messageCreate', async (message, song) => {
             distube.setVolume(message, Number(filteredDocs2[0].volume))
           }
         } else {
-          const filteredDocs2 = (await collectionMusic.find({}, { projection: { _id: 0, volume: 1 } }).toArray()); 
-          message.channel.send("Só é possivel colocar o volume de 0% à 200%\n\nVolume Atual: " + filteredDocs2[0].volume + "%")
+          const filteredDocs2 = (await collectionMusic.find({}, { projection: { _id: 0, volume: 1 } }).toArray());
+          let embed = new MessageEmbed()
+            .setDescription("Só é possivel colocar o volume de \`0%\` à \`200%\`\n\nVolume Atual: \`" + filteredDocs2[0].volume + "%\`")
+          message.channel.send({embeds: [embed]})
         }
       } else {
         const filteredDocs2 = (await collectionMusic.find({}, { projection: { _id: 0, volume: 1 } }).toArray()); 
-        message.channel.send("Só é possivel colocar o volume de 0% à 200%\n\nVolume Atual: " + filteredDocs2[0].volume + "%")
+        let embed = new MessageEmbed()
+          .setDescription("Só é possivel colocar o volume de \`0%\` à \`200%\`\n\nVolume Atual: \`" + filteredDocs2[0].volume + "%\`")
+        message.channel.send({embeds: [embed]})
       }
     } else {
       const filteredDocs2 = (await collectionMusic.find({}, { projection: { _id: 0, volume: 1 } }).toArray()); 
-      message.channel.send("Só é possivel colocar o volume de 0% à 200%\n\nVolume Atual: " + filteredDocs2[0].volume + "%")
+      let embed = new MessageEmbed()
+        .setDescription("Só é possivel colocar o volume de \`0%\` à \`200%\`\n\nVolume Atual: \`" + filteredDocs2[0].volume + "%\`")
+      message.channel.send({embeds: [embed]})
     }
     const queue = distube.getQueue(message.guildId);
     function sleep(ms) {
