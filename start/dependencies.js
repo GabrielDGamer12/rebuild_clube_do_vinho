@@ -6,6 +6,7 @@ const express = require('express');
 const app = express();
 require("./mongologin");
 const config = require("../settings/config.json");
-//require("./ping");
+require("./ping");
+require("./google_uptime");
 
 module.exports = { Client, Discord, Message, MessageEmbed, Collection, WebhookClient, fs, express, app };

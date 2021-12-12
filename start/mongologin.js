@@ -10,6 +10,8 @@ const collectionMusic = clientDB.db("cdvDB").collection("cdvMusic");
 
 const collectionConfig = collectionMusic;
 
-module.exports = { collectionMusic, collectionConfig }
+const collectionUptime = clientDB.db("cdvDB").collection("cdvUptime");
+
+module.exports = { collectionMusic, collectionConfig, collectionUptime }
 
 console.log("MongoDB Logged");
